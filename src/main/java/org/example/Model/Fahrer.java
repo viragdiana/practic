@@ -1,0 +1,56 @@
+package org.example.Model;
+
+public class Fahrer implements HasId<Integer>{
+    private Integer id;
+    private String name;
+    private String team;
+    FahrerStatus status;
+    private Integer skillLevel;
+
+    public Fahrer() {}
+
+    public Fahrer(Integer id, String name, String team, FahrerStatus status, Integer skillLevel) {
+        this.id = id;
+        this.name = name;
+        this.team = team;
+        this.status = status;
+        this.skillLevel = skillLevel;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getTeam() {
+        return team;
+    }
+
+    public void setTeam(String team) {
+        this.team = team;
+    }
+
+    public Integer getSkillLevel() {
+        return skillLevel;
+    }
+
+    public void setSkillLevel(Integer skillLevel) {
+        this.skillLevel = skillLevel;
+    }
+
+    @Override
+    public Integer getId() {
+        return 0;
+    }
+
+    @Override
+    public void setId(Integer integer) {
+
+    }
+
+}
+
+
