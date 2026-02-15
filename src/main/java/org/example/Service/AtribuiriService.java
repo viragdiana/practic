@@ -1,91 +1,37 @@
 package org.example.Service;
 
-
-import org.example.Model.RennenEreignis;
 import org.example.Model.Fahrer;
-import org.example.Repository.IRepository;
+import org.example.Model.RennenEreignis;
+import org.example.Model.Strafe;
+import org.example.Repository.FahrerRepository;
+import org.example.Repository.RennenEreignisRepository;
+import org.example.Repository.StrafeRepository;
 
-import java.util.Comparator;
 import java.util.List;
 
 public class AtribuiriService {
 
-    private final IRepository<Fahrer, Integer> fahrerRepository;
-    private final IRepository<RennenEreignis, Integer> rennenereignisRepository;
+    private final FahrerRepository fahrerRepository;
+    private final RennenEreignisRepository rennenereignisRepository;
+    private final StrafeRepository strafeRepository;
 
-    public AtribuiriService(IRepository<Fahrer, Integer> fahrerRepository,
-                            IRepository<RennenEreignis, Integer> rennenereignisRepository) {
+    public AtribuiriService(FahrerRepository fahrerRepository,
+                            RennenEreignisRepository rennenereignisRepository,
+                            StrafeRepository strafeRepository) {
         this.fahrerRepository = fahrerRepository;
         this.rennenereignisRepository = rennenereignisRepository;
-    }
-
-    public RennenEreignis getRennenEreignis(Integer id) {
-        return rennenereignisRepository.findById(id);
-    }
-
-    public void addRennenEreignisse(RennenEreignis medikamente) {
-        rennenereignisRepository.save(medikamente);
-    }
-
-    public void addRennenEreignisse(Integer id) {
-        rennenereignisRepository.delete(id);
-    }
-
-    public List<RennenEreignis> getAllRennenEreignisse() {
-        return  rennenereignisRepository.findAll();
-    }
-
-    public List<RennenEreignis> getrennenEreignisse() {
-        return rennenereignisRepository.findAll();
-    }
-
-    public void addFahrer(Fahrer fahrer) {
-        fahrerRepository.save(fahrer);
+        this.strafeRepository = strafeRepository;
     }
 
     public List<Fahrer> getAllFahrer() {
         return fahrerRepository.findAll();
     }
 
-////
-//    public List<Fahrer> getPatientByDiagnose(String diagnose) {
-//        return patientRepository.findAll().stream()
-//                .filter(patient -> patient.getDiagnose().equalsIgnoreCase(diagnose))
-//                .toList();
-//    }
-//
-//
-//    public List<Patient> filterByKrankheit(String krankheit) {
-//        return patientRepository.findAll().stream()
-//                .filter(p -> p.getMedikamente().stream()
-//                        .anyMatch(b-> b.getKrankheit().equalsIgnoreCase(krankheit)))
-//                .toList();
-//    }
+    public List<RennenEreignis> getAllRennenEreignisse() {
+        return rennenereignisRepository.findAll();
+    }
 
-    //alle Medikamente sortieren, die einem
-    //bestimmten Patienten verschrieben wurden. Sowohl der Patient als auch der
-    //Sortiermodus (aufsteigend oder absteigend nach Preis) werden vom Benutzer
-    //angegeben.
-
-
-//
-//    public List<Medikamente> sortedByMedikamenteAndPrice (String patientName, String modus) {
-//        List<Medikamente> medikamentes= patientRepository.findAll().stream()
-//                .filter(p -> p.getName().equalsIgnoreCase(patientName))
-//                .flatMap(m -> m.getMedikamente().stream())
-//                .toList();
-//
-//        if(modus.equalsIgnoreCase("aufsteigend")) {
-//            return medikamentes.stream()
-//                    .sorted(Comparator.comparingDouble(Medikamente::getPreis))
-//                    .toList();
-//        } else if (modus.equalsIgnoreCase("absteigend")) {
-//            return medikamentes.stream()
-//                    .sorted(Comparator.comparingDouble(Medikamente::getPreis).reversed())
-//                    .toList().reversed();
-//        } else {
-//            throw new IllegalArgumentException("Ungültiger Sortiermodus: " + modus);
-//        }
-//    }
-
+    public List<Strafe> getAllStrafen() {
+        return strafeRepository.findAll();
+    }
 }

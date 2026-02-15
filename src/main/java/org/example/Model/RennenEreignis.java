@@ -1,10 +1,10 @@
 package org.example.Model;
 
-public class RennenEreignis implements HasId<Integer>{
+public class RennenEreignis {
     private Integer id;
     private Integer fahrerId;
-    EreignisTyp typ;
-    private  Integer basePoints;
+    private EreignisTyp typ;
+    private Integer basePoints;
     private Integer lap;
 
     public RennenEreignis() {}
@@ -15,6 +15,14 @@ public class RennenEreignis implements HasId<Integer>{
         this.typ = typ;
         this.basePoints = basePoints;
         this.lap = lap;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getFahrerId() {
@@ -47,16 +55,5 @@ public class RennenEreignis implements HasId<Integer>{
 
     public void setLap(Integer lap) {
         this.lap = lap;
-    }
-
-    @Override
-    public Integer getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Integer id) {
-        this.id = id;
-
     }
 }

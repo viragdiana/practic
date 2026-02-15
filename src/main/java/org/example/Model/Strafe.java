@@ -1,14 +1,13 @@
 package org.example.Model;
 
-public class Strafe implements HasId<Integer>{
+public class Strafe {
     private Integer id;
     private Integer fahrerId;
-    SafeGrund grund;
+    private SafeGrund grund;
     private Integer seconds;
     private Integer lap;
 
-    public Strafe() {
-    }
+    public Strafe() {}
 
     public Strafe(Integer id, Integer fahrerId, SafeGrund grund, Integer seconds, Integer lap) {
         this.id = id;
@@ -16,6 +15,14 @@ public class Strafe implements HasId<Integer>{
         this.grund = grund;
         this.seconds = seconds;
         this.lap = lap;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getFahrerId() {
@@ -48,15 +55,5 @@ public class Strafe implements HasId<Integer>{
 
     public void setLap(Integer lap) {
         this.lap = lap;
-    }
-
-    @Override
-    public Integer getId() {
-        return
-    }
-
-    @Override
-    public void setId(Integer integer) {
-
     }
 }

@@ -2,7 +2,7 @@ package org.example.Repository;
 
 import org.example.Model.Strafe;
 
-public class StrafeRepository extends FileRepository<Strafe, Integer>{
+public class StrafeRepository extends FileRepository<Strafe> {
     public StrafeRepository(String filename) {
         super(filename, Strafe.class);
     }
