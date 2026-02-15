@@ -59,7 +59,7 @@ public class Fahrer{
 
     @Override
     public String toString() {
-        return "Fahrer{id=" + id + ", name='" + name + "', team='" + team + "', status=" + status + ", skillLevel=" + skillLevel + "}";
+        return "[" + id + "] " + name + " (" + team + ") - " + status + ", skill=" + skillLevel;
     }
 }
 

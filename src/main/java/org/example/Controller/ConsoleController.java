@@ -3,6 +3,9 @@ package org.example.Controller;
 import org.example.Model.*;
 import org.example.Service.AtribuiriService;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,12 +21,13 @@ public class ConsoleController {
     public void start() {
         while (true) {
             System.out.println("\n=== Racing Management System ===");
-            System.out.println("1. Filter drivers by status");
-            System.out.println("2. Show events for a driver");
-            System.out.println("3. Show penalties for a driver");
-            System.out.println("4. Filter events by type");
-            System.out.println("5. Calculate total points per driver");
-            System.out.println("6. Show drivers sorted by total penalty seconds");
+            System.out.println("1. Load and display data");
+            System.out.println("2. Filter drivers by team and status");
+            System.out.println("3. Sort drivers by skill level");
+            System.out.println("4. Write sorted drivers to file");
+            System.out.println("5. Calculate computed points");
+            System.out.println("6. Show ranking");
+            System.out.println("7. Race report");
             System.out.println("0. Exit");
             System.out.print("Choose an option: ");
 
@@ -31,22 +35,25 @@ public class ConsoleController {
 
             switch (choice) {
                 case "1":
-                    filterDriversByStatus();
+                    loadAndDisplayData();
                     break;
                 case "2":
-                    showEventsForDriver();
+                    filterByTeamAndStatus();
                     break;
                 case "3":
-                    showPenaltiesForDriver();
+                    sortDriversBySkill();
                     break;
                 case "4":
-                    filterEventsByType();
+                    writeSortedDriversToFile();
                     break;
                 case "5":
-                    calculateTotalPointsPerDriver();
+                    calculateComputedPoints();
                     break;
                 case "6":
-                    showDriversSortedByPenaltySeconds();
+                    showRanking();
+                    break;
+                case "7":
+                    raceReport();
                     break;
                 case "0":
                     System.out.println("Exiting...");
@@ -57,169 +64,115 @@ public class ConsoleController {
         }
     }
 
-    private void filterDriversByStatus() {
-        System.out.println("Available statuses: ACTIVE, DNF");
-        System.out.print("Enter status: ");
-        String input = scanner.nextLine().trim().toUpperCase();
-
-        try {
-            FahrerStatus status = FahrerStatus.valueOf(input);
-            var filtered = atribuiriService.getAllFahrer().stream()
-                    .filter(f -> f.getStatus() == status)
-                    .collect(Collectors.toList());
-
-            if (filtered.isEmpty()) {
-                System.out.println("No drivers found with status " + status);
-            } else {
-                System.out.println("Drivers with status " + status + ":");
-                filtered.forEach(System.out::println);
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid status! Please enter ACTIVE or DNF.");
-        }
-    }
-
-    private void showEventsForDriver() {
+    // Task 1: Load and display all data
+    private void loadAndDisplayData() {
         List<Fahrer> drivers = atribuiriService.getAllFahrer();
-        System.out.println("Available drivers:");
-        drivers.forEach(f -> System.out.println("  " + f.getId() + " - " + f.getName()));
-        System.out.print("Enter driver ID: ");
-        String input = scanner.nextLine().trim();
+        List<RennenEreignis> events = atribuiriService.getAllRennenEreignisse();
+        List<Strafe> penalties = atribuiriService.getAllStrafen();
 
-        try {
-            int driverId = Integer.parseInt(input);
-            Fahrer driver = drivers.stream()
-                    .filter(f -> f.getId().equals(driverId))
-                    .findFirst()
-                    .orElse(null);
+        System.out.println("Drivers loaded: " + drivers.size());
+        System.out.println("Events loaded: " + events.size());
+        System.out.println("Penalties loaded: " + penalties.size());
+        System.out.println();
+        drivers.forEach(System.out::println);
+    }
 
-            if (driver == null) {
-                System.out.println("Driver not found with ID " + driverId);
-                return;
-            }
+    // Task 2: Filter by team and status ACTIVE
+    private void filterByTeamAndStatus() {
+        System.out.print("Enter team name: ");
+        String team = scanner.nextLine().trim();
 
-            var events = atribuiriService.getAllRennenEreignisse().stream()
-                    .filter(e -> e.getFahrerId().equals(driverId))
-                    .collect(Collectors.toList());
+        List<Fahrer> filtered = atribuiriService.filterByTeamAndStatus(team);
 
-            if (events.isEmpty()) {
-                System.out.println("No events found for " + driver.getName());
-            } else {
-                System.out.println("Events for " + driver.getName() + " (" + driver.getTeam() + "):");
-                events.forEach(System.out::println);
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid ID! Please enter a number.");
+        if (filtered.isEmpty()) {
+            System.out.println("No active drivers found for team " + team);
+        } else {
+            System.out.println("Active drivers in team " + team + ":");
+            filtered.forEach(System.out::println);
         }
     }
 
-    private void showPenaltiesForDriver() {
-        List<Fahrer> drivers = atribuiriService.getAllFahrer();
-        System.out.println("Available drivers:");
-        drivers.forEach(f -> System.out.println("  " + f.getId() + " - " + f.getName()));
-        System.out.print("Enter driver ID: ");
-        String input = scanner.nextLine().trim();
+    // Task 3: Sort by skillLevel descending, name ascending for ties
+    private void sortDriversBySkill() {
+        List<Fahrer> sorted = atribuiriService.sortDriversBySkill();
+        System.out.println("Drivers sorted by skill level:");
+        sorted.forEach(System.out::println);
+    }
 
-        try {
-            int driverId = Integer.parseInt(input);
-            Fahrer driver = drivers.stream()
-                    .filter(f -> f.getId().equals(driverId))
-                    .findFirst()
-                    .orElse(null);
-
-            if (driver == null) {
-                System.out.println("Driver not found with ID " + driverId);
-                return;
+    // Task 4: Write sorted list to drivers_sorted.txt
+    private void writeSortedDriversToFile() {
+        List<Fahrer> sorted = atribuiriService.sortDriversBySkill();
+        try (PrintWriter writer = new PrintWriter(new FileWriter("drivers_sorted.txt"))) {
+            for (Fahrer f : sorted) {
+                writer.println(f.toString());
             }
-
-            var penalties = atribuiriService.getAllStrafen().stream()
-                    .filter(s -> s.getFahrerId().equals(driverId))
-                    .collect(Collectors.toList());
-
-            if (penalties.isEmpty()) {
-                System.out.println("No penalties found for " + driver.getName());
-            } else {
-                System.out.println("Penalties for " + driver.getName() + " (" + driver.getTeam() + "):");
-                penalties.forEach(System.out::println);
-                int totalSeconds = penalties.stream().mapToInt(Strafe::getSeconds).sum();
-                System.out.println("Total penalty time: " + totalSeconds + " seconds");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid ID! Please enter a number.");
+            System.out.println("Sorted drivers written to drivers_sorted.txt");
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
         }
     }
 
-    private void filterEventsByType() {
-        System.out.println("Available event types: OVERTAKE, PIT_STOP, FASTEST_LAP, COLLISION, TRACK_LIMITS");
-        System.out.print("Enter event type: ");
-        String input = scanner.nextLine().trim().toUpperCase();
-
-        try {
-            EreignisTyp typ = EreignisTyp.valueOf(input);
-            var filtered = atribuiriService.getAllRennenEreignisse().stream()
-                    .filter(e -> e.getTyp() == typ)
-                    .collect(Collectors.toList());
-
-            Map<Integer, Fahrer> driverMap = atribuiriService.getAllFahrer().stream()
-                    .collect(Collectors.toMap(Fahrer::getId, f -> f));
-
-            if (filtered.isEmpty()) {
-                System.out.println("No events found with type " + typ);
-            } else {
-                System.out.println("Events of type " + typ + ":");
-                for (RennenEreignis event : filtered) {
-                    Fahrer driver = driverMap.get(event.getFahrerId());
-                    String driverName = driver != null ? driver.getName() : "Unknown";
-                    System.out.println("  Lap " + event.getLap() + " - " + driverName + " (points: " + event.getBasePoints() + ")");
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid event type!");
-        }
-    }
-
-    private void calculateTotalPointsPerDriver() {
+    // Task 5: Compute points and show first 5 events
+    private void calculateComputedPoints() {
+        List<RennenEreignis> events = atribuiriService.getAllRennenEreignisse();
         Map<Integer, Fahrer> driverMap = atribuiriService.getAllFahrer().stream()
                 .collect(Collectors.toMap(Fahrer::getId, f -> f));
 
-        Map<Integer, Integer> pointsByDriver = atribuiriService.getAllRennenEreignisse().stream()
-                .collect(Collectors.groupingBy(
-                        RennenEreignis::getFahrerId,
-                        Collectors.summingInt(e -> e.getBasePoints() * driverMap.getOrDefault(e.getFahrerId(), new Fahrer()).getSkillLevel())
-                ));
-
-        System.out.println("Total points per driver (basePoints * skillLevel):");
-        pointsByDriver.entrySet().stream()
-                .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed())
-                .forEach(entry -> {
-                    Fahrer driver = driverMap.get(entry.getKey());
-                    String name = driver != null ? driver.getName() : "Unknown";
-                    System.out.println("  " + name + ": " + entry.getValue() + " points");
-                });
+        System.out.println("First 5 events with computed points:");
+        events.stream().limit(5).forEach(event -> {
+            int computed = atribuiriService.computePoints(event);
+            Fahrer driver = driverMap.get(event.getFahrerId());
+            String name = driver != null ? driver.getName() : "Unknown";
+            System.out.println("  " + name + " | " + event.getTyp() + " | lap " + event.getLap()
+                    + " | base=" + event.getBasePoints() + " | computed=" + computed);
+        });
     }
 
-    private void showDriversSortedByPenaltySeconds() {
+    // Task 6: Ranking - top 5, winning team
+    private void showRanking() {
+        Map<Integer, Integer> totalScores = atribuiriService.calculateTotalScores();
         Map<Integer, Fahrer> driverMap = atribuiriService.getAllFahrer().stream()
                 .collect(Collectors.toMap(Fahrer::getId, f -> f));
 
-        Map<Integer, Integer> penaltyByDriver = atribuiriService.getAllStrafen().stream()
-                .collect(Collectors.groupingBy(
-                        Strafe::getFahrerId,
-                        Collectors.summingInt(Strafe::getSeconds)
-                ));
+        List<Map.Entry<Integer, Integer>> ranked = totalScores.entrySet().stream()
+                .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed()
+                        .thenComparing(entry -> driverMap.containsKey(entry.getKey())
+                                ? driverMap.get(entry.getKey()).getName() : ""))
+                .collect(Collectors.toList());
 
-        if (penaltyByDriver.isEmpty()) {
-            System.out.println("No penalties recorded.");
-            return;
+        System.out.println("Top 5 Ranking:");
+        for (int i = 0; i < Math.min(5, ranked.size()); i++) {
+            Map.Entry<Integer, Integer> entry = ranked.get(i);
+            Fahrer driver = driverMap.get(entry.getKey());
+            String name = driver != null ? driver.getName() + " (" + driver.getTeam() + ")" : "Unknown";
+            System.out.println("  " + (i + 1) + ". " + name + " -> " + entry.getValue());
         }
 
-        System.out.println("Drivers sorted by total penalty seconds (descending):");
-        penaltyByDriver.entrySet().stream()
-                .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed())
-                .forEach(entry -> {
-                    Fahrer driver = driverMap.get(entry.getKey());
-                    String name = driver != null ? driver.getName() : "Unknown";
-                    System.out.println("  " + name + ": " + entry.getValue() + "s penalty");
-                });
+        if (!ranked.isEmpty()) {
+            Fahrer winner = driverMap.get(ranked.get(0).getKey());
+            if (winner != null) {
+                System.out.println("Winning team: " + winner.getTeam());
+            }
+        }
+    }
+
+    // Task 7: Race report - event count per type, sorted descending, written to file
+    private void raceReport() {
+        Map<EreignisTyp, Long> counts = atribuiriService.countEventsByType();
+
+        List<Map.Entry<EreignisTyp, Long>> sorted = counts.entrySet().stream()
+                .sorted(Map.Entry.<EreignisTyp, Long>comparingByValue().reversed())
+                .collect(Collectors.toList());
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter("race_report.txt"))) {
+            writer.println("=== Race Report ===");
+            for (Map.Entry<EreignisTyp, Long> entry : sorted) {
+                String line = entry.getKey() + ": " + entry.getValue();
+                writer.println(line);
+            }
+            System.out.println("Race report written to race_report.txt");
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
+        }
     }
 }
