@@ -4,7 +4,7 @@ public class Fahrer{
     private Integer id;
     private String name;
     private String team;
-    FahrerStatus status;
+    private FahrerStatus status;
     private Integer skillLevel;
 
     public Fahrer() {}
@@ -41,13 +41,26 @@ public class Fahrer{
         this.skillLevel = skillLevel;
     }
 
+    public FahrerStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(FahrerStatus status) {
+        this.status = status;
+    }
+
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return "Fahrer{id=" + id + ", name='" + name + "', team='" + team + "', status=" + status + ", skillLevel=" + skillLevel + "}";
+    }
 }
 
 
