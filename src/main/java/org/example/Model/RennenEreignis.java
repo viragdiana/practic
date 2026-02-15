@@ -56,4 +56,9 @@ public class RennenEreignis {
     public void setLap(Integer lap) {
         this.lap = lap;
     }
+
+    @Override
+    public String toString() {
+        return "RennenEreignis{id=" + id + ", fahrerId=" + fahrerId + ", typ=" + typ + ", basePoints=" + basePoints + ", lap=" + lap + "}";
+    }
 }

@@ -56,4 +56,9 @@ public class Strafe {
     public void setLap(Integer lap) {
         this.lap = lap;
     }
+
+    @Override
+    public String toString() {
+        return "Strafe{id=" + id + ", fahrerId=" + fahrerId + ", grund=" + grund + ", seconds=" + seconds + ", lap=" + lap + "}";
+    }
 }
