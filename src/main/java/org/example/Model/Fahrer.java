@@ -1,6 +1,6 @@
 package org.example.Model;
 
-public class Fahrer implements HasId<Integer>{
+public class Fahrer{
     private Integer id;
     private String name;
     private String team;
@@ -41,14 +41,11 @@ public class Fahrer implements HasId<Integer>{
         this.skillLevel = skillLevel;
     }
 
-    @Override
     public Integer getId() {
-        return 0;
+        return id;
     }
-
-    @Override
-    public void setId(Integer integer) {
-
+    public void setId(Integer id) {
+        this.id = id;
     }
 
 }

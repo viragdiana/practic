@@ -52,7 +52,7 @@ public class Strafe implements HasId<Integer>{
 
     @Override
     public Integer getId() {
-        return 0;
+        return
     }
 
     @Override

@@ -51,11 +51,12 @@ public class RennenEreignis implements HasId<Integer>{
 
     @Override
     public Integer getId() {
-        return 0;
+        return id;
     }
 
     @Override
-    public void setId(Integer integer) {
+    public void setId(Integer id) {
+        this.id = id;
 
     }
 }
